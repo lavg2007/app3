@@ -1,0 +1,115 @@
+% ======================================================================
+
+
+% Sujet du document
+% Informations importantes
+%
+%
+% Prénom Nom
+% H. Dube 2019
+% ======================================================================
+% Ce code rassemble les efforts d'étudiants de la faculté de génie  
+% de l'université de Sherbrooke afin de faire un template LaTeX moderne
+% dédié à l'écriture de rapport universitaire.
+% Ce document est libre d'être utilisé et modifié.
+% ======================================================================
+
+% ----------------------------------------------------
+% Initialisation
+% ----------------------------------------------------
+\documentclass{udes_rapport} % Voir udes_rapport.cls
+
+\begin{document}
+\selectlanguage{french}
+
+% ----------------------------------------------------
+% Configurer la page titre
+% ----------------------------------------------------
+
+% Information
+\faculte{Génie}
+\departement{génie électrique et génie informatique}
+\app{1}{Éléments de statique et de dynamique}
+\professeur{M. Raef Cherif et M. Jean-Samuel Lauzon}
+\etudiants{Hubert Dubé - dubh3401 \\ Marc Sirois - sirm2508\\ Gabriel Lavoie - lavg2007}
+\dateRemise{18 septembre 2019}
+
+
+% ======================================================================
+\pagenumbering{roman} % met les numéros de pages en romain
+% ----------------------------------------------------
+% Page titre
+% ----------------------------------------------------
+\fairePageTitre{LOGO} % Options: [STD, LOGO]
+\newpage
+
+% ----------------------------------------------------
+% Table des matières
+% ----------------------------------------------------
+\tableofcontents
+\newpage
+
+
+% ----------------------------------------------------
+% Table des figures
+% ----------------------------------------------------
+\listoffigures
+\newpage
+
+
+
+% ======================================================================
+% Document
+% ======================================================================
+\pagenumbering{arabic} % met des chiffres arabes
+\setcounter{page}{1} % reset les numéros de pages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%{Analyse du signal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+Some shits and stuff
+\section{Conclusion}
+
+
+\begin{comment}
+\begin{center}
+	\centering
+	\includegraphics[width=0.7\textwidth]{puissance}
+	\captionof{figure}{Spectre de puissance d'une onde de 1kHz}
+	\label{puissance}
+\end{center}
+
+
+\section{Filtres FIR}
+\noindent\begin{minipage}{\textwidth} 
+\begin{minipage}{0.5\textwidth}
+  \centering
+  \includegraphics[width=.75\linewidth]{ampFIR}
+  \captionof{subfigure}{Amplitude}
+  \label{FIR:ampFIR}
+\end{minipage}%
+\begin{minipage}{0.5\textwidth}
+  \centering 
+  \includegraphics[width=.75\linewidth]{phaseCute} 
+  \captionof{subfigure}{Phase} 
+  \label{FIR:phaseFIR} 
+\end{minipage} 
+\captionof{figure}{Filtre IIR} 
+\label{FIR} 
+\end{minipage}
+\end{comment}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
