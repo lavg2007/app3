@@ -67,10 +67,10 @@
 %{Analyse du signal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+La compagnie EstampBeauce a donné le mandat à notre équipe de modéliser un système permettant d'asservir la 
+position angulaire d'une antenne. Les trois systèmes, soit électrique, électromécanique et mécanique, sont décrits séparément. 
+Par la suite, une analyse complète du mécanisme est fournie en représentation d'état et par sa fonction de transfert.
 
-
-
-Some shits and stuff
 \section{Équations physiques du système}
 \subsection{Système électrique}
 Le système électrique sert à transformer le signal d'entrée $e_in$ en tension $e_in$ qui alimente le moteur.
@@ -167,6 +167,15 @@ y(t) =
 \end{bmatrix} 
 $$
 
+\section{Réponse du système en boucle fermée}
+
+La réponse à l'échelon de la fonction de transfert du système en boucle fermée, donnée par l'équation (BOUCLE FERMÉE), est la suivante.
+(insert figure step response)
+On remarque premièrement que la réponse se stabilise autour de la valeur $\theta_l = 1$, soit la valeur de consigne donnée.
+Deuxièmement, le système présente un léger sous-amortissement, qu'on remarque puisque l'angle mesurée oscille autour de la consigne.
+Ce résultat est logique physiquement, et représente le comportement désiré du système.
+
+
 \section{Arbre flexible}
 Si on remplace l'arbre de transmission rigide par une tige flexible, on doit ajouter $\theta_m$ et $\omega_m$ au système d'équations d'état.
 Comme la tige est situé après la transmission dans le système, le couple causé par sa torsion est défini ainsi, avec l'angle $\theta_m$ vu du côté de la charge.
@@ -228,10 +237,21 @@ e_a  \\
 \omega_m 
 \end{bmatrix}
 $$
+La réponse impulsionnelle du système est la suivante.
+\begin{center}
+	\centering
+	\includegraphics[width=0.7\textwidth]{h_mou}
+	\captionof{figure}{Réponse impulsionnelle de l'arbre flexible et comparaison entre les deux systèmes.}
+	\label{puissance}
+\end{center}
+On remarque que la réponse est très similaire à celle du système avec l'arbre rigide. 
+De plus, les oscillations causées par le ressort torsionnel diminuent avec la stabilisation du système.
+
 
 \section{Conclusion}
 
-
+La modélisation présentée dans ce rapport démontre que le système conçu pour
+ l'asservissement de l'antenne remplis les requis d'EstampBeauce.
 
 
 

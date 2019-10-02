@@ -34,7 +34,7 @@ sys = ss(A, B, C, D);
 H = tf(sys)
 
 % reponse impulsionnel de la fonciton de transfert
-figure
+figure()
 impulse(H)
 %% dans le cas du shaft mou
 Kl = 10000
@@ -57,10 +57,13 @@ D = 0;
  
 sys = ss(A, B, C, D);
  
-H = tf(sys)
- 
+H_mou = tf(sys)
+time = [0:0.001:5] % plus longue periode sur le graph
+
 figure
-impulse(H)
+impulse(H_mou,time)
+figure
+impulse(H-H_mou,time)
 
 
 %% separation en 4 x 1 ordre
@@ -90,18 +93,20 @@ hold on
 impulse(tf(b1,a1));
 [b2,a2] = residue([r(3) r(4)], [p(3) p(4)],[]);% ordre 2
 impulse(tf(b2,a2));
-[b3,a3] = residue([r(4)], [p(4)],[]); % ordre 1
-impulse(tf(b3,a3));
+% [b3,a3] = residue([r(4)], [p(4)],[]); % ordre 1
+% impulse(tf(b3,a3));
 impulse(H); % original
 impulse(G*GAIN); % recompose avec gain ajuste
-legend('1','2','3','4','H','G')
+legend('3','2','H','G')
  
 %% reponse a la consigne
 % l'equation de la reponse est
-rep = Kp*H/(Kp*H + 1)
- 
+rep_tet_d = Kp*H/(Kp*H + 1)
+rep_tet_d_norm = minreal(rep_tet_d)
+% sous forme complete
+
 figure()
-step(rep) 
+step(rep_tet_d) 
  
 %% identification du moteur
 load('donnees_moteur_2016.mat')
@@ -112,14 +117,16 @@ K_calc = rep(2)
 
 h = tf(K_calc,[T_calc 1])
 step(h)
+
 E = 8;
 tm = 0.52;
 Ia = 1.09;
- 
+% trouver les caractristique du moteur a rotor bloque
 ra = E/Ia;
 ki = tm/Ia;
 kb = ki;
- 
+
+% trouver les caractristique du moteur en mouvement
 syms jm bm;
 eq1 = (ki/ra)/(bm + ki*kb/ra) == K_calc;
 bm = double(solve(eq1))
@@ -133,20 +140,16 @@ G1 = tf(1,[La Ra]);
 G2 = tf((K_i/((J_moteur/N) + N*J_load)),[1 ((B_moteur/N) + N*B_load)/((J_moteur/N) + N*J_load)]);
 G3 = -1/N * K_b;
 G4 = tf(1,[1 0]);
- 
+% reconstruction de  la boucle ouverte complete
 M  = G0*G1*G2*G4/(1-G1*G2*G3)
+m  = minreal(M) % normalisation
 % Reduction d'ordre
 M_ord3  = G0*G2*G4/(1-G2*G3)
 M_ord2  = G2*G4/(1-G2*G3)
-m  = minreal(M)
+
 figure()
 impulse(M)
 hold on
 impulse(M_ord3)
 impulse(M_ord2*80)
-% impulse(G1)
-% impulse(G2)
-% impulse(G4)
 legend('M','ord3','ord2')
-%% reponse en boucle ferme
-
