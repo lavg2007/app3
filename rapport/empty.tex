@@ -356,7 +356,63 @@ De plus, les oscillations causées par le ressort torsionnel diminuent avec la s
 
 
 \section{Linéarisation}
+Le système d'équation à linéariser est le suivant :
+\begin{equation}
+F_1 = \dot{h}(t) = \frac{1}{A}(q_f(t)+q_c(t)-q_v(t))
+\end{equation}
+\begin{equation}
+F_2 = \dot{T}(t) = \frac{1}{A h(t)}(q_f(t)(T_f - T(t))+q_c(t)(T_f - T(t)))
+\end{equation}
+La première étape de la linéarisation consiste à résoudre le système au point d'équilibre. Pour se faire, on pose les dérivés à 0, car à l'équilibre il n'y a plus de changement.
+Les conditions d'équilibres sont : 
+\begin{center}
+$q_v = q_f + q_c$ où $q_f = K \cdot q_c$
+\end{center}
 
+\[ \dot{h}(t) = 0									\]
+\[ \dot{T}(t) = 0									\]
+\[	q_{c_e} = \frac{k_v \sqrt{2gh_e}}{1+K}			\]
+\[	q_{f_e} = \frac{k_v \sqrt{2gh_e}}{1+\frac{1}{K}}\]
+\[	K = \frac{T_c - T_e}{T_e -T_f} 					\]
+Les équations de linéarisation sont obtenues à partir de la série de Taylor de chaque équation différentielle de départ. Celle-ci sont
+\begin{equation}
+\dot{h}(t) + \frac{\partial\dot{h}(t)}{\partial\dot{h}(t)}\Delta \dot h = F_1 + \frac{\partial\dot{h}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{h}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{h}(t)}{\partial h(t)}\Delta h
+\end{equation}
+
+\begin{equation}
+\dot{T}(t) + \frac{\partial\dot{T}(t)}{\partial\dot{T}(t)} \Delta \dot T = F_2 + \frac{\partial\dot{T}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{T}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{T}(t)}{\partial T(t)}\Delta T+\frac{\partial\dot{T}(t)}{\partial h(t)}\Delta h
+\end{equation}
+Les équations peuvent être réécrite sous la forme suivante en utilisant les conditions d'équilibre:
+\begin{equation}
+\Delta \dot h = \frac{\partial\dot{h}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{h}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{h}(t)}{\partial h(t)}\Delta h
+\end{equation}
+\begin{equation}
+\Delta \dot T =\frac{\partial\dot{T}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{T}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{T}(t)}{\partial T(t)}\Delta T
+\end{equation}
+En évaluant les dérivées et en mettant les équations sous forme matricielle, on obtient le système d'équations suivant :
+$$
+\begin{bmatrix}
+\Delta \dot h \\
+\Delta \dot T
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{-k_v/A \cdot g}{\sqrt{2gh_e}}&0\\0&\frac{-1}{Ah_e}(q_{f_e}+q_{c_e})
+\end{bmatrix}
+\begin{bmatrix}
+\Delta h \\
+\Delta T
+\end{bmatrix}
++
+\begin{bmatrix}
+\frac{1}{A}&\frac{1}{A}\\ \frac{1}{Ah_e}(T_f-T_e) & \frac{1}{Ah_e}(T_c-T_e)
+\end{bmatrix}
+\begin{bmatrix}
+\Delta q_f \\
+\Delta q_c
+\end{bmatrix}
+$$
+Ce système est valide dans les environs du point d'équilibre défini par les conditions énumérées plus haut.
 \section{Conclusion}
 
 La modélisation présentée dans ce rapport démontre que le système conçu pour

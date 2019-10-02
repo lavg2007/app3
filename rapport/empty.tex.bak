@@ -30,7 +30,7 @@
 \faculte{Génie}
 \departement{génie électrique et génie informatique}
 \app{3}{Modélisation et identification de systèmes dynamiques}
-\professeur{M. Raef Cherif et M. Jean-Samuel Lauzon}
+\professeur{Jean-Baptiste Michaud}
 \etudiants{Hubert Dubé - dubh3401 \\ Gabriel Lavoie - lavg2007}
 \dateRemise{2 octobre 2019}
 
@@ -67,16 +67,107 @@
 %{Analyse du signal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+La compagnie EstampBeauce a donné le mandat à notre équipe de modéliser un système permettant d'asservir la 
+position angulaire d'une antenne. Les trois systèmes, soit électrique, électromécanique et mécanique, sont décrits séparément. 
+Par la suite, une analyse complète du mécanisme est fournie en représentation d'état et par sa fonction de transfert.
 
-\section{Fonction de transfert en boucle ouverte et fermée}
-Les équations des parties précedente permette d'obtenir toutes les fonctions de transfert nécessaire pour représenter le système en utilisant uniquement des système d'ordre 1. De manière analytique, en rerpenant l'équation (XXXXX):
-\[	G0 = \frac{e_a}{e_{in}} = \frac{K}{Ts + 1}	\]
-avec l'équation (XXXXX):
-\[	G1 = \frac{I_a}{e_a - \frac{k_b \omega_L}{N}} = \frac{1}{L_a s + R_a}						\]
-avec l'équation (XXXXX):
-\[	G2 = \frac{\omega_L}{I_a} = \frac{\frac{k_i}{\frac{J_m}{N}+N J_L}}{s + \frac{\frac{B_m}{N} + N B_L}{\frac{J_m}{N}+N J_L}}	\]
-adin d'obtenir $\theta _L$ comme sortie il suffit d'ajouter un intégrateur à la suite de $G2$:
-\[	G4 = \frac{\theta _L}{\omega _L} = \frac{1}{s}	\]
+\section{Équations physiques du système}
+\subsection{Système électrique}
+Le système électrique sert à transformer le signal d'entrée $e_in$ en tension $e_in$ qui alimente le moteur.
+Il s'agit d'un amplificateur avec une réponse correspondant à un système d'ordre 1, dont l'équation est la suivante.
+
+\begin{equation}
+\frac{de_a}{dt} = \frac{K}{\tau}e_{in} - \frac{1}{\tau}e_a
+\end{equation}
+
+\subsection{Système électromécanique}
+Le moteur à courant continu permet de convertir l'énergie électrique en rotation. 
+L'analyse de la dynamique du système donne l'équation suivante.
+\begin{equation}
+\frac{di_a}{dt} = \frac{1}{L_a}e_a-\frac{R_a}{L_a}i_a - \frac{1}{L_a}e_b
+\end{equation}
+
+La force contre-électromotrice de moteur est définie en fonction de sa vitesse angulaire par l'équation suivante.
+\begin{equation}
+e_b = K_b\omega_m
+\end{equation}
+
+En insérant (3) dans (2), on obtiens l'équation différentielle du courant $i_a$
+\begin{equation}
+\frac{di_a}{dt} = \frac{1}{L_a}e_a-\frac{R_a}{L_a}i_a - \frac{K_b}{L_a}\omega_m
+\end{equation}
+
+\subsection{Système mécanique}
+On considère ici que l'arbre reliant la transmission et la charge est rigide.
+L'équation dynamique du système mécanique est la suivante.
+\begin{equation}
+J_m\frac{d\omega_m}{dt} = T_m - T_l - B_m\omega_m
+\end{equation}
+Le couple du moteur est défini en fonction du courant d'armature
+\begin{equation}
+T_m = K_ii_a
+\end{equation}
+Le couple de la charge est simplement défini par sa friction et son inertie. On transforme ensuite cette équation pour obtenir le couple de la charge 
+tel que vu du côté du moteur.
+\begin{equation}
+T_l = \frac{d\omega_l}{dt}J_l + B_l\omega_l = N^2\frac{d\omega_m}{dt}J_l + N^2B_l\omega_m
+\end{equation} 
+Insérer (6) et (7) dans (5) donne une expression pour la vitesse angulaire du moteur.
+\[ \frac{d\omega_m}{dt} = \frac{K_ii_a}{N^2J_l + J_m} - \frac{N^2B_l + B_m}{N^2J_l + J_m}\omega_m \]
+Finalement, on transforme l'équation en utilisant $\omega_m = \omega_l/N$ pour obtenir la forme désirée.
+\begin{equation}
+\frac{d\omega_l}{dt} = \frac{NK_ii_a}{N^2J_l + J_m} - \frac{N^2B_l + B_m}{N^2J_l + J_m}\omega_m
+\end{equation} 
+
+\section{Variables et équations d'état}
+Les quatre variables d'état du système sont $\theta_l$, $\omega_l$, $i_a$ et $e_a$.
+On utilise les équations (1), (4) et (8), ainsi que la suivante, pour décrire le système.
+\begin{equation}
+\frac{d\theta_l}{dt} = \omega_l
+\end{equation}
+On obtiens donc la représentation d'état en forme ABCD.
+\
+$$
+\begin{bmatrix}
+\dot{\theta_l} \\
+\dot{\omega_l} \\
+\dot{i_a} \\
+\dot{e_a} 
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & \frac{-(N^2B_l + B_m)}{N^2J_l + J_m} & \frac{NK_i}{N^2J_l + J_m} & 0 \\
+0 & \frac{K_b}{NL_a} & \frac{-R_a}{L_a} & \frac{1}{L_a} \\
+0 & 0 & 0 & \frac{-1}{\tau}
+\end{bmatrix}
+\begin{bmatrix}
+\theta_l \\
+\omega_l \\
+i_a \\
+e_a 
+\end{bmatrix}
++
+\begin{bmatrix}
+0 \\
+0\\
+0\\
+\frac{K}{\tau}
+\end{bmatrix} 
+e_{in}
+$$
+
+$$
+y(t) = 
+\begin{bmatrix}
+1 & 0 & 0 & 0
+\end{bmatrix} 
+\begin{bmatrix}
+\theta_l \\ \omega_l \\ i_a \\ e_a
+\end{bmatrix} 
+$$
+
+
 \subsection{Représentation graphique}
 Sous forme de schéma bloc, le système peut être représenté à la figure \ref{fig:bloc}.
 \insertFigure{open_closed_loop}{0.7}{Schéma bloc du système}{fig:bloc}
@@ -112,6 +203,19 @@ H = \frac{\theta_L}{\theta_d} = \frac{6.625e05}{s^4 + 1101s^3 + 1.018e05s^2 + 1.
 \label{eq:nmum_FTBF}
 \end{equation}
 Ces solutions sont obtenues à l'aide de Matlab vue la complexité des équations.
+
+
+\section{Fonction de transfert en boucle ouverte et fermée}
+Les équations des parties précedente permette d'obtenir toutes les fonctions de transfert nécessaire pour représenter le système en utilisant uniquement des système d'ordre 1. De manière analytique, en rerpenant l'équation (XXXXX):
+\[	G0 = \frac{e_a}{e_{in}} = \frac{K}{Ts + 1}	\]
+avec l'équation (XXXXX):
+\[	G1 = \frac{I_a}{e_a - \frac{k_b \omega_L}{N}} = \frac{1}{L_a s + R_a}						\]
+avec l'équation (XXXXX):
+\[	G2 = \frac{\omega_L}{I_a} = \frac{\frac{k_i}{\frac{J_m}{N}+N J_L}}{s + \frac{\frac{B_m}{N} + N B_L}{\frac{J_m}{N}+N J_L}}	\]
+adin d'obtenir $\theta _L$ comme sortie il suffit d'ajouter un intégrateur à la suite de $G2$:
+\[	G4 = \frac{\theta _L}{\omega _L} = \frac{1}{s}	\]
+
+
 \section{Réduction}
 La réduction de l'ordre d'un système consiste à retirer les modes les moins importants à l'allure générale du système pour ne conserver que ceux les plus importants, simplifiant les équaitons de représentation.
 \subsection{Réduction physique}
@@ -140,6 +244,15 @@ h_2 = \frac{-0.2335s + 20.86}{s^2 + 1.71s}
 La différence à la réponse impulsionnelle originale est représenté à la figure \ref{fig:dif_reduc_num}. Comme la différence est que très petite, il est correct de dire que cette fonction ($h_2$) représente bien le système. Ceci était attendu puisque qu'elle a été construit à partir des pôles les moins négatifs et ceux ci sont très éloignés des deux autres pôles qui ont moins d'impact sur l'allure de la réponse.
 
 \insertFigure{dif_reduc_num}{0.7}{Difference de réponse impulsionelle suite aux réductions}{fig:dif_reduc_num}
+
+\section{Réponse du système à la consigne}
+La réponse à l'échelon de la fonction de transfert du système en boucle fermée, donnée par l'équation (BOUCLE FERMÉE), est la suivante.
+(insert figure step response)
+On remarque premièrement que la réponse se stabilise autour de la valeur $\theta_l = 1$, soit la valeur de consigne donnée.
+Deuxièmement, le système présente un léger sous-amortissement, qu'on remarque puisque l'angle mesurée oscille autour de la consigne.
+Ce résultat est logique physiquement, et représente le comportement désiré du système.
+
+
 \section{Identification du moteur}
 Les résultats de l'expérience à rotor bloqué permettent d'identifier les valeurs de $R_A$, $k_i$ et $k_b$. Durant cet expérience, la force contre électromotrice est nulle (il n'y a pas de rotation) et l'hypothèse est tel que l'inductance est beaucoup plus petite que la résistance. Ceci nous permet d'obtenir :
 \[	R_a = \frac{e_a}{I_a} = 7.34 \Omega	\]
@@ -168,9 +281,148 @@ En utilisant la méthode des moindres carrée et les données fournies, les vale
 Réutilisant les equations \eqref{eq:tf_odr1} et \eqref{eq:tf_moteur} avec les résultats pour K et T, il est possible de trouver les valeurs de $J_m$ et $B_m$ pour finaliser l'identificaiton du moteur.
 \[B_m = 0.0150	\]
 \[J_m = 0.0229	\]
-\section{Linéarisation}
 
+\section{Arbre flexible}
+Si on remplace l'arbre de transmission rigide par une tige flexible, on doit ajouter $\theta_m$ et $\omega_m$ au système d'équations d'état.
+Comme la tige est situé après la transmission dans le système, le couple causé par sa torsion est défini ainsi, avec l'angle $\theta_m$ vu du côté de la charge.
+\begin{equation}
+T_k = K_l(N\theta_m - \theta_l)
+\end{equation}
+Pour décrire le système dynamique, on sépare les équations de mécanique en deux équations différentielles.
+\begin{equation}
+\frac{d\omega_m}{dt} = \frac{K_ii_a}{J_m} - \frac{B_m}{J_m} - \frac{NK_l}{J_m}(N\theta_m - \theta_l)
+\end{equation}
+\begin{equation}
+\frac{d\omega_l}{dt} = \frac{K_l}{J_l}(N\theta_m - \theta_l) - \frac{B_l}{J_l}\omega_l
+\end{equation}
+À partir de ces équations et celles définissant le système avec arbre rigide, on déduit la représentation d'état d'ordre 6
+$$
+\begin{bmatrix}
+\dot{\theta_l} \\
+\dot{\omega_l} \\
+\dot{i_a} \\
+\dot{e_a} \\
+\dot{\theta_m} \\
+\dot{\omega_m} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 1 & 0 & 0 & 0 & 0  \\
+-\frac{K_l}{J_l} & -\frac{B_l}{J_l} & 0 & 0 & \frac{NK_l}{J_l} & 0 \\
+0 & 0 & -\frac{R_a}{L_a} & \frac{1}{L_a} & 0 & -\frac{K_b}{L_a} \\
+0 & 0 & 0 & -\frac{1}{\tau} & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 \\
+\frac{NK_l}{J_m} & 0 & \frac{k_i}{J_m} & 0 & \frac{-K_lN^2}{J_m} & -\frac{B_m}{J_m}
+
+\end{bmatrix}
+\begin{bmatrix}
+\theta_l \\
+\omega_l \\
+i_a \\
+e_a  \\
+\theta_m \\
+\omega_m 
+\end{bmatrix}
++
+\begin{bmatrix}
+0 \\ 0 \\ 0 \\ \frac{K}{\tau} \\ 0 \\ 0
+\end{bmatrix}
+e_{in}
+$$
+$$
+y(t) = 
+\begin{bmatrix}
+1 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+\theta_l \\
+\omega_l \\
+i_a \\
+e_a  \\
+\theta_m \\
+\omega_m 
+\end{bmatrix}
+$$
+La réponse impulsionnelle du système est la suivante.
+\begin{center}
+	\centering
+	\includegraphics[width=0.7\textwidth]{h_mou}
+	\captionof{figure}{Réponse impulsionnelle de l'arbre flexible et comparaison entre les deux systèmes.}
+	\label{puissance}
+\end{center}
+On remarque que la réponse est très similaire à celle du système avec l'arbre rigide. 
+De plus, les oscillations causées par le ressort torsionnel diminuent avec la stabilisation du système.
+
+
+
+\section{Linéarisation}
+Le système d'équation à linéariser est le suivant :
+\begin{equation}
+F_1 = \dot{h}(t) = \frac{1}{A}(q_f(t)+q_c(t)-q_v(t))
+\end{equation}
+\begin{equation}
+F_2 = \dot{T}(t) = \frac{1}{A h(t)}(q_f(t)(T_f - T(t))+q_c(t)(T_f - T(t)))
+\end{equation}
+La première étape de la linéarisation consiste à résoudre le système au point d'équilibre. Pour se faire, on pose les dérivés à 0, car à l'équilibre il n'y a plus de changement.
+Les conditions d'équilibres sont : 
+\begin{center}
+$q_v = q_f + q_c$ où $q_f = K \cdot q_c$
+\end{center}
+les valeurs à l'équilibre pour chaque fonction sont donc :
+\[ \dot{h}(t) = 0									\]
+\[ \dot{T}(t) = 0									\]
+\[	q_{c_e} = \frac{k_v \sqrt{2gh_e}}{1+K}			\]
+\[	q_{f_e} = \frac{k_v \sqrt{2gh_e}}{1+\frac{1}{K}}\]
+\[	K = \frac{T_c - T_e}{T_e -T_f} 					\]
+Les équations de linéarisation sont obtenues à partir de la série de Taylor de chaque équation différentielle de départ. Celle-ci sont
+\begin{equation}
+\dot{h}(t) + \frac{\partial\dot{h}(t)}{\partial\dot{h}(t)}\Delta \dot h = F_1 + \frac{\partial\dot{h}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{h}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{h}(t)}{\partial h(t)}\Delta h
+\end{equation}
+
+\begin{equation}
+\dot{T}(t) + \frac{\partial\dot{T}(t)}{\partial\dot{T}(t)} \Delta \dot T = F_2 + \frac{\partial\dot{T}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{T}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{T}(t)}{\partial T(t)}\Delta T+\frac{\partial\dot{T}(t)}{\partial h(t)}\Delta h
+\end{equation}
+Les équations peuvent être réécrite sous la forme suivante en utilisant les conditions d'équilibre:
+\begin{equation}
+\Delta \dot h = \frac{\partial\dot{h}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{h}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{h}(t)}{\partial h(t)}\Delta h
+\end{equation}
+\begin{equation}
+\Delta \dot T =\frac{\partial\dot{T}(t)}{\partial q_f(t)}\Delta q_f + \frac{\partial\dot{T}(t)}{\partial q_c(t)}\Delta q_c + \frac{\partial\dot{T}(t)}{\partial T(t)}\Delta T
+\end{equation}
+En évaluant les dérivées et en mettant les équations sous forme matricielle, on obtient le système d'équations suivant :
+$$
+\begin{bmatrix}
+\Delta \dot h \\
+\Delta \dot T
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{-k_v/A \cdot g}{\sqrt{2gh_e}}&0\\0&\frac{-1}{Ah_e}(q_{f_e}+q_{c_e})
+\end{bmatrix}
+\begin{bmatrix}
+\Delta h \\
+\Delta T
+\end{bmatrix}
++
+\begin{bmatrix}
+\frac{1}{A}&\frac{1}{A}\\ \frac{1}{Ah_e}(T_f-T_e) & \frac{1}{Ah_e}(T_c-T_e)
+\end{bmatrix}
+\begin{bmatrix}
+\Delta q_f \\
+\Delta q_c
+\end{bmatrix}
+$$
+Ce système est valide dans les environs du point d'équilibre défini par les conditions énuméré
 \section{Conclusion}
+
+La modélisation présentée dans ce rapport démontre que le système conçu pour
+ l'asservissement de l'antenne remplis les requis d'EstampBeauce.
+
+
+
+
+
+
 
 
 \begin{comment}
