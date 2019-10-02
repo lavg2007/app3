@@ -67,8 +67,177 @@
 %{Analyse du signal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+
+
+
 Some shits and stuff
+\section{Équations physiques du système}
+\subsection{Système électrique}
+Le système électrique sert à transformer le signal d'entrée $e_in$ en tension $e_in$ qui alimente le moteur.
+Il s'agit d'un amplificateur avec une réponse correspondant à un système d'ordre 1, dont l'équation est la suivante.
+
+\begin{equation}
+\frac{de_a}{dt} = \frac{K}{\tau}e_{in} - \frac{1}{\tau}e_a
+\end{equation}
+
+\subsection{Système électromécanique}
+Le moteur à courant continu permet de convertir l'énergie électrique en rotation. 
+L'analyse de la dynamique du système donne l'équation suivante.
+\begin{equation}
+\frac{di_a}{dt} = \frac{1}{L_a}e_a-\frac{R_a}{L_a}i_a - \frac{1}{L_a}e_b
+\end{equation}
+
+La force contre-électromotrice de moteur est définie en fonction de sa vitesse angulaire par l'équation suivante.
+\begin{equation}
+e_b = K_b\omega_m
+\end{equation}
+
+En insérant (3) dans (2), on obtiens l'équation différentielle du courant $i_a$
+\begin{equation}
+\frac{di_a}{dt} = \frac{1}{L_a}e_a-\frac{R_a}{L_a}i_a - \frac{K_b}{L_a}\omega_m
+\end{equation}
+
+\subsection{Système mécanique}
+On considère ici que l'arbre reliant la transmission et la charge est rigide.
+L'équation dynamique du système mécanique est la suivante.
+\begin{equation}
+J_m\frac{d\omega_m}{dt} = T_m - T_l - B_m\omega_m
+\end{equation}
+Le couple du moteur est défini en fonction du courant d'armature
+\begin{equation}
+T_m = K_ii_a
+\end{equation}
+Le couple de la charge est simplement défini par sa friction et son inertie. On transforme ensuite cette équation pour obtenir le couple de la charge 
+tel que vu du côté du moteur.
+\begin{equation}
+T_l = \frac{d\omega_l}{dt}J_l + B_l\omega_l = N^2\frac{d\omega_m}{dt}J_l + N^2B_l\omega_m
+\end{equation} 
+Insérer (6) et (7) dans (5) donne une expression pour la vitesse angulaire du moteur.
+\[ \frac{d\omega_m}{dt} = \frac{K_ii_a}{N^2J_l + J_m} - \frac{N^2B_l + B_m}{N^2J_l + J_m}\omega_m \]
+Finalement, on transforme l'équation en utilisant $\omega_m = \omega_l/N$ pour obtenir la forme désirée.
+\begin{equation}
+\frac{d\omega_l}{dt} = \frac{NK_ii_a}{N^2J_l + J_m} - \frac{N^2B_l + B_m}{N^2J_l + J_m}\omega_m
+\end{equation} 
+
+\section{Variables et équations d'état}
+Les quatre variables d'état du système sont $\theta_l$, $\omega_l$, $i_a$ et $e_a$.
+On utilise les équations (1), (4) et (8), ainsi que la suivante, pour décrire le système.
+\begin{equation}
+\frac{d\theta_l}{dt} = \omega_l
+\end{equation}
+On obtiens donc la représentation d'état en forme ABCD.
+\
+$$
+\begin{bmatrix}
+\dot{\theta_l} \\
+\dot{\omega_l} \\
+\dot{i_a} \\
+\dot{e_a} 
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & \frac{-(N^2B_l + B_m)}{N^2J_l + J_m} & \frac{NK_i}{N^2J_l + J_m} & 0 \\
+0 & \frac{K_b}{NL_a} & \frac{-R_a}{L_a} & \frac{1}{L_a} \\
+0 & 0 & 0 & \frac{-1}{\tau}
+\end{bmatrix}
+\begin{bmatrix}
+\theta_l \\
+\omega_l \\
+i_a \\
+e_a 
+\end{bmatrix}
++
+\begin{bmatrix}
+0 \\
+0\\
+0\\
+\frac{K}{\tau}
+\end{bmatrix} 
+e_{in}
+$$
+
+$$
+y(t) = 
+\begin{bmatrix}
+1 & 0 & 0 & 0
+\end{bmatrix} 
+\begin{bmatrix}
+\theta_l \\ \omega_l \\ i_a \\ e_a
+\end{bmatrix} 
+$$
+
+\section{Arbre flexible}
+Si on remplace l'arbre de transmission rigide par une tige flexible, on doit ajouter $\theta_m$ et $\omega_m$ au système d'équations d'état.
+Comme la tige est situé après la transmission dans le système, le couple causé par sa torsion est défini ainsi, avec l'angle $\theta_m$ vu du côté de la charge.
+\begin{equation}
+T_k = K_l(N\theta_m - \theta_l)
+\end{equation}
+Pour décrire le système dynamique, on sépare les équations de mécanique en deux équations différentielles.
+\begin{equation}
+\frac{d\omega_m}{dt} = \frac{K_ii_a}{J_m} - \frac{B_m}{J_m} - \frac{NK_l}{J_m}(N\theta_m - \theta_l)
+\end{equation}
+\begin{equation}
+\frac{d\omega_l}{dt} = \frac{K_l}{J_l}(N\theta_m - \theta_l) - \frac{B_l}{J_l}\omega_l
+\end{equation}
+À partir de ces équations et celles définissant le système avec arbre rigide, on déduit la représentation d'état d'ordre 6
+$$
+\begin{bmatrix}
+\dot{\theta_l} \\
+\dot{\omega_l} \\
+\dot{i_a} \\
+\dot{e_a} \\
+\dot{\theta_m} \\
+\dot{\omega_m} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 1 & 0 & 0 & 0 & 0  \\
+-\frac{K_l}{J_l} & -\frac{B_l}{J_l} & 0 & 0 & \frac{NK_l}{J_l} & 0 \\
+0 & 0 & -\frac{R_a}{L_a} & \frac{1}{L_a} & 0 & -\frac{K_b}{L_a} \\
+0 & 0 & 0 & -\frac{1}{\tau} & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 \\
+\frac{NK_l}{J_m} & 0 & \frac{k_i}{J_m} & 0 & \frac{-K_lN^2}{J_m} & -\frac{B_m}{J_m}
+
+\end{bmatrix}
+\begin{bmatrix}
+\theta_l \\
+\omega_l \\
+i_a \\
+e_a  \\
+\theta_m \\
+\omega_m 
+\end{bmatrix}
++
+\begin{bmatrix}
+0 \\ 0 \\ 0 \\ \frac{K}{\tau} \\ 0 \\ 0
+\end{bmatrix}
+e_{in}
+$$
+$$
+y(t) = 
+\begin{bmatrix}
+1 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+\theta_l \\
+\omega_l \\
+i_a \\
+e_a  \\
+\theta_m \\
+\omega_m 
+\end{bmatrix}
+$$
+
 \section{Conclusion}
+
+
+
+
+
+
+
+
 
 
 \begin{comment}
