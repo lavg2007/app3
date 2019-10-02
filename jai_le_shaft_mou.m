@@ -61,9 +61,13 @@ H_mou = tf(sys)
 time = [0:0.001:5] % plus longue periode sur le graph
 
 figure
+subplot(2,1,1)
 impulse(H_mou,time)
-figure
+title('   ')
+subplot(2,1,2)
 impulse(H-H_mou,time)
+title('   ')
+
 
 
 %% separation en 4 x 1 ordre
@@ -89,7 +93,7 @@ hold on
 % impulse(h2)
 % impulse(h3)
 % impulse(h4)
-[b1,a1] = residue([r(1) r(3) r(4)],[p(1) p(3) p(4)],[]); % ordre 3
+[b1,a1] = residue([r(2) r(3) r(4)],[p(2) p(3) p(4)],[]); % ordre 3
 impulse(tf(b1,a1));
 [b2,a2] = residue([r(3) r(4)], [p(3) p(4)],[]);% ordre 2
 impulse(tf(b2,a2));
@@ -98,7 +102,15 @@ impulse(tf(b2,a2));
 impulse(H); % original
 impulse(G*GAIN); % recompose avec gain ajuste
 legend('3','2','H','G')
- 
+%% affichage de diff reduc num
+t_red_num = [0:0.0001:0.065];
+% [y1,t1] = impulse(H - tf(b1,a1),t_red_num);
+[y2,t2] = impulse(H - tf(b2,a2),t_red_num);
+figure
+plot(t2,y2, 'LineWidth',1.5)
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+legend('M - h_{ord2}')
 %% reponse a la consigne
 % l'equation de la reponse est
 rep_tet_d = Kp*H/(Kp*H + 1)
@@ -106,7 +118,8 @@ rep_tet_d_norm = minreal(rep_tet_d)
 % sous forme complete
 
 figure()
-step(rep_tet_d) 
+step(rep_tet_d)
+title('  ')
  
 %% identification du moteur
 load('donnees_moteur_2016.mat')
@@ -133,23 +146,43 @@ bm = double(solve(eq1))
 eq2 = (jm)/(bm + ki*kb/ra) == T_calc;
 jm = double(solve(eq2))
  
-%% toute la fonction de transfert
- 
-G0 = tf(K/T,[1 1/T]);
+%% reduction physique
+% constante
+B_moteur = 0.01;
+J_moteur = 0.02;
+K_b = 0.5;
+K_i = 0.5;
+T = 0.01;
+K = 100;
+J_load = 1;
+B_load = 1;
+La = 0.008;
+Ra = 8;
+N = 0.1;
+Kp = 0.318;
+
+G0 = tf(K,[T 1]);
 G1 = tf(1,[La Ra]);
 G2 = tf((K_i/((J_moteur/N) + N*J_load)),[1 ((B_moteur/N) + N*B_load)/((J_moteur/N) + N*J_load)]);
 G3 = -1/N * K_b;
 G4 = tf(1,[1 0]);
+%% 
 % reconstruction de  la boucle ouverte complete
 M  = G0*G1*G2*G4/(1-G1*G2*G3)
 m  = minreal(M) % normalisation
 % Reduction d'ordre
-M_ord3  = G0*G2*G4/(1-G2*G3)
-M_ord2  = G2*G4/(1-G2*G3)
-
-figure()
-impulse(M)
-hold on
-impulse(M_ord3)
-impulse(M_ord2*80)
-legend('M','ord3','ord2')
+La = 0
+G1 = tf(1,[La Ra]);
+M_ord3  = G0*G1*G2*G4/(1-G1*G2*G3)
+T = 0
+G0 = tf(K,[T 1]);
+M_ord2  = G0*G1*G2*G4/(1-G1*G2*G3)
+%% afficha de la difference entre la reduction d'ordre et l'originale
+t_red_anal = [0:0.001:4.5];
+[y1,t1] = impulse( M - M_ord3,t_red_anal);
+[y2,t2] = impulse(M - M_ord2,t_red_anal);
+figure
+plot(t1, y1,t2,y2, 'LineWidth',1.5)
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+legend('M - M_{ord3}','M - M_{ord2}')

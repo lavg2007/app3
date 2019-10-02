@@ -70,7 +70,7 @@
 
 \section{Fonction de transfert en boucle ouverte et fermée}
 Les équations des parties précedente permette d'obtenir toutes les fonctions de transfert nécessaire pour représenter le système en utilisant uniquement des système d'ordre 1. De manière analytique, en rerpenant l'équation (XXXXX):
-\[	G0 = \frac{e_a}{e_{in}} = \frac{K/T}{s +1/T}	\]
+\[	G0 = \frac{e_a}{e_{in}} = \frac{K}{Ts + 1}	\]
 avec l'équation (XXXXX):
 \[	G1 = \frac{I_a}{e_a - \frac{k_b \omega_L}{N}} = \frac{1}{L_a s + R_a}						\]
 avec l'équation (XXXXX):
@@ -89,20 +89,57 @@ Afin d'obtenir la fonction de transfert en boucle ouverte (FTBO) la loi de Masso
 M = \frac{\theta_L}{e_{in}} = \frac{G_0 G_1 G_2 G_4}{1 + G_1 G_2 G_3}
 \label{eq:FTBO}
 \end{equation}
+Comme les paramètres de la FTBO sont connues, elle peut être exprimée par :
+\begin{equation}
+M = \frac{\theta_L}{e_{in}} = \frac{2.083e06}{s^4 + 1101s^3 + 1.018e05s^2 + 1.708e05s}
+\label{eq:nmum_FTBO}
+\end{equation}
+L'équation caractéristique est les cas où le dénominateur de la fonction est égale à 0, ce qui permet d'obtenir les pôles de la fonction. Donc celle-ci est:
+\begin{equation}
+0 = s^4 + 1101s^3 + 1.018e05s^2 + 1.708e05s
+\label{eq:caracteristic}
+\end{equation}
 Pour obtenir la fonction de transfert en boucle fermé (FTBF) il faut inclure l'équation (XXXX) dans \eqref{eq:FTBO}, car elle permet de lier l'entrée de la consigne à la sortie du système. En effet,
 \[	M = \frac{\theta_L}{k_p (\theta_L -\theta_L )}	\]
 En manipulant l'équation on obtient donc
 \begin{equation}
-G = \frac{\theta_L}{\theta_d} = \frac{M \cdot k_p}{1+M \cdot k_p}
+H = \frac{\theta_L}{\theta_d} = \frac{M \cdot k_p}{1+M \cdot k_p}
 \label{eq:FTBF}
 \end{equation}
 En remplacant les paramètres de \eqref{eq:FTBO} et \eqref{eq:FTBF} et en normalisant la FTBF peut être écrite comme:
 \begin{equation}
-H = \frac{\theta_L}{\theta_d} = \frac{M \cdot k_p}{1+M \cdot k_p}
+H = \frac{\theta_L}{\theta_d} = \frac{6.625e05}{s^4 + 1101s^3 + 1.018e05s^2 + 1.708e05s + 6.625e05}
 \label{eq:nmum_FTBF}
 \end{equation}
-Cette solution est obtenue à l'aide de Matlab vue la complexité de l'équaiton.
+Ces solutions sont obtenues à l'aide de Matlab vue la complexité des équations.
 \section{Réduction}
+La réduction de l'ordre d'un système consiste à retirer les modes les moins importants à l'allure générale du système pour ne conserver que ceux les plus importants, simplifiant les équaitons de représentation.
+\subsection{Réduction physique}
+En regardant le modèle établie à la figure \ref{fig:bloc} il est possible de conclure que le système peut être réduit à un ordre 3 sans problème. En effet, en considèrant l'hypothèse que la valeur de l'inductance est beaucoup plus petite que la valeur de la résistance dans le modèle du moteur, $G0$ ne fait qu'être un gain d'environt $\frac{1}{R_a}$. Posant $L_a = 0$, la FTBO devient alors :
+\begin{equation}
+M_3 = \frac{\theta_L}{e_{in}} = \frac{k_{m_3} G_0 G_2 G_4}{1 + k_{m_3} G_2 G_3}
+\end{equation}
+où $k_{m_3}$ est un gain correspondant à $G1$ avec $L_a = 0$.
+Il est aussi possible d'obtenir un système d'ordre 2 en  réduisant aussi $G0$ à un simple gain. Ceci peut aussi être fait, car la valeur de T est très petite en comapraison aux autres termes multipliant $s$ des autres fonctions de transfert. Ainsi, la faible constante de temps de $G0$ réduit l'impact de cette fonction sur la réponse globale du système. La FTBO d'ordre 2 est donc
+\begin{equation}
+M_2 = \frac{\theta_L}{e_{in}} = \frac{k_{m_3} k_{m_2} G_2 G_4}{1 + k_{m_3} G_2 G_3}
+\end{equation}
+où $k_{m_3}$ est un gain correspondant à $G0$ avec $T = 0$.
+L'impact de ces réductions sur la réponse impulsionnelle peut être observé à la figure \ref{fig:dif_reduc_phy}. Comme tracé, la différence de la réduction $M_3$ est moins importante que celle de $M_2$, car la constante de temps de $G1$ ($L_a$) était encore plus faible que $T$. Dans les deux cas, les fonctions représentent tout de même très bien le  système en boucle ouvert et pourraient être utilisé afin de simplifier l'expression du système.
+\insertFigure{dif_reduc_phy}{0.7}{Difference de réponse impulsionelle suite aux réductions}{fig:dif_reduc_phy}
+\subsection{Réduction numérique}
+La réduction numérique correspond à utiliser un stratégie semblable à la méthode physique, mais au lieux de réduire la complexité en regardant les paramètres physiques, il suffit de supprimer les pôles les moins importants de la FTBO originale \eqref{eq:FTBO}. Pour se faire, il faut utiliser la fonction \textit{residue} de Matlab. Celle retourne les pôles de FTBO. Ceux-ci sont :
+\[	P_0 = -998.9565	\]
+\[	P_1 = -100.0000	\]
+\[	P_2 = -1.7101	\]
+\[	P_3 = 0	\]
+en utilisant la forme standard d'un filtre d'ordre 1, il est possible de reconstruire 2 filtre d'ordre 1 avec les deux filtres les plus lents ($P_2$ et $P_3$). En les combinants en un seul, on obtient la fonction de transfert suivante :
+\begin{equation}
+h_2 = \frac{-0.2335s + 20.86}{s^2 + 1.71s}
+\end{equation}
+La différence à la réponse impulsionnelle originale est représenté à la figure \ref{fig:dif_reduc_num}. Comme la différence est que très petite, il est correct de dire que cette fonction ($h_2$) représente bien le système. Ceci était attendu puisque qu'elle a été construit à partir des pôles les moins négatifs et ceux ci sont très éloignés des deux autres pôles qui ont moins d'impact sur l'allure de la réponse.
+
+\insertFigure{dif_reduc_num}{0.7}{Difference de réponse impulsionelle suite aux réductions}{fig:dif_reduc_num}
 \section{Identification du moteur}
 Les résultats de l'expérience à rotor bloqué permettent d'identifier les valeurs de $R_A$, $k_i$ et $k_b$. Durant cet expérience, la force contre électromotrice est nulle (il n'y a pas de rotation) et l'hypothèse est tel que l'inductance est beaucoup plus petite que la résistance. Ceci nous permet d'obtenir :
 \[	R_a = \frac{e_a}{I_a} = 7.34 \Omega	\]
