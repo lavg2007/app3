@@ -68,12 +68,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 La compagnie EstampBeauce a donné le mandat à notre équipe de modéliser un système permettant d'asservir la 
-position angulaire d'une antenne. Les trois systèmes, soit électrique, électromécanique et mécanique, sont décrits séparément. 
-Par la suite, une analyse complète du mécanisme est fournie en représentation d'état et par sa fonction de transfert.
+position angulaire d'une antenne. Les trois parties, soit électrique, électromécanique et mécanique, sont décrits séparément. 
+Par la suite, une analyse complète du mécanisme est fournie en représentation d'état et par sa fonction de transfert. \\Le nom des sections du script MATLAB correspondant aux sections du rapport seront identifiés par le symbole \%
 
 \section{Équations physiques du système}
 \subsection{Système électrique}
-Le système électrique sert à transformer le signal d'entrée $e_in$ en tension $e_in$ qui alimente le moteur.
+Le système électrique sert à transformer le signal d'entrée $e_{in}$ en la tension $e_a$ qui alimente le moteur.
 Il s'agit d'un amplificateur avec une réponse correspondant à un système d'ordre 1, dont l'équation est la suivante.
 
 \begin{equation}
@@ -84,7 +84,7 @@ Il s'agit d'un amplificateur avec une réponse correspondant à un système d'or
 Le moteur à courant continu permet de convertir l'énergie électrique en rotation. 
 L'analyse de la dynamique du système donne l'équation suivante.
 \begin{equation}
-\frac{di_a}{dt} = \frac{1}{L_a}e_a-\frac{R_a}{L_a}i_a - \frac{1}{L_a}e_b
+L_a\frac{di_a}{dt} = e_a-R_ai_a - e_b
 \end{equation}
 
 La force contre-électromotrice de moteur est définie en fonction de sa vitesse angulaire par l'équation suivante.
@@ -119,7 +119,9 @@ Finalement, on transforme l'équation en utilisant $\omega_m = \omega_l/N$ pour 
 \frac{d\omega_l}{dt} = \frac{NK_ii_a}{N^2J_l + J_m} - \frac{N^2B_l + B_m}{N^2J_l + J_m}\omega_m
 \end{equation} 
 
-\section{Variables et équations d'état}
+\section{Représentations du système}
+\subsection{Représentation d'état}
+\textit{\% mise en matrice des quatre fonction de transfert} \\
 Les quatre variables d'état du système sont $\theta_l$, $\omega_l$, $i_a$ et $e_a$.
 On utilise les équations (1), (4) et (8), ainsi que la suivante, pour décrire le système.
 \begin{equation}
@@ -167,7 +169,7 @@ y(t) =
 \end{bmatrix} 
 $$
 
-
+\pagebreak
 \subsection{Représentation graphique}
 Sous forme de schéma bloc, le système peut être représenté à la figure \ref{fig:bloc}.
 \insertFigure{open_closed_loop}{0.7}{Schéma bloc du système}{fig:bloc}
@@ -190,7 +192,9 @@ L'équation caractéristique est les cas où le dénominateur de la fonction est
 0 = s^4 + 1101s^3 + 1.018e05s^2 + 1.708e05s
 \label{eq:caracteristic}
 \end{equation}
-Pour obtenir la fonction de transfert en boucle fermé (FTBF) il faut inclure l'équation (XXXX) dans \eqref{eq:FTBO}, car elle permet de lier l'entrée de la consigne à la sortie du système. En effet,
+La tension d'entrée est déterminée par la différence entre les deux angles, avec un gain déterminé par le potentiomètre.
+\[ e_{in} = K_p(\theta_d -\theta_l)\]
+Pour obtenir la fonction de transfert en boucle fermé (FTBF) il faut inclure cette équation dans \eqref{eq:FTBO}, car elle permet de lier l'entrée de la consigne à la sortie du système. En effet,
 \[	M = \frac{\theta_L}{k_p (\theta_L -\theta_L )}	\]
 En manipulant l'équation on obtient donc
 \begin{equation}
@@ -203,14 +207,21 @@ H = \frac{\theta_L}{\theta_d} = \frac{6.625e05}{s^4 + 1101s^3 + 1.018e05s^2 + 1.
 \label{eq:nmum_FTBF}
 \end{equation}
 Ces solutions sont obtenues à l'aide de Matlab vue la complexité des équations.
-
+\pagebreak
+\section{Réponse du système à la consigne}
+\textit{\% reponse a la consigne} \\
+La réponse à l'échelon de la fonction de transfert du système en boucle fermée, donnée par l'équation \eqref{eq:FTBF}, est la suivante.
+\insertFigure{rep_dir}{0.7}{Réponse à l'échelon de la FTBF}{fig:repdir}
+On remarque premièrement que la réponse se stabilise autour de la valeur $\theta_l = 1$, soit la valeur de consigne donnée.
+Deuxièmement, le système présente un léger sous-amortissement, qu'on remarque puisque l'angle mesurée oscille autour de la consigne.
+Ce résultat est logique physiquement, et représente le comportement désiré du système.
 
 \section{Fonction de transfert en boucle ouverte et fermée}
-Les équations des parties précedente permette d'obtenir toutes les fonctions de transfert nécessaire pour représenter le système en utilisant uniquement des système d'ordre 1. De manière analytique, en rerpenant l'équation (XXXXX):
+Les équations des parties précedente permette d'obtenir toutes les fonctions de transfert nécessaire pour représenter le système en utilisant uniquement des système d'ordre 1. De manière analytique, en rerpenant l'équation (1):
 \[	G0 = \frac{e_a}{e_{in}} = \frac{K}{Ts + 1}	\]
-avec l'équation (XXXXX):
+avec l'équation (4):
 \[	G1 = \frac{I_a}{e_a - \frac{k_b \omega_L}{N}} = \frac{1}{L_a s + R_a}						\]
-avec l'équation (XXXXX):
+avec l'équation (8):
 \[	G2 = \frac{\omega_L}{I_a} = \frac{\frac{k_i}{\frac{J_m}{N}+N J_L}}{s + \frac{\frac{B_m}{N} + N B_L}{\frac{J_m}{N}+N J_L}}	\]
 adin d'obtenir $\theta _L$ comme sortie il suffit d'ajouter un intégrateur à la suite de $G2$:
 \[	G4 = \frac{\theta _L}{\omega _L} = \frac{1}{s}	\]
@@ -219,6 +230,7 @@ adin d'obtenir $\theta _L$ comme sortie il suffit d'ajouter un intégrateur à l
 \section{Réduction}
 La réduction de l'ordre d'un système consiste à retirer les modes les moins importants à l'allure générale du système pour ne conserver que ceux les plus importants, simplifiant les équaitons de représentation.
 \subsection{Réduction physique}
+\textit{\% reduction physique} \\
 En regardant le modèle établie à la figure \ref{fig:bloc} il est possible de conclure que le système peut être réduit à un ordre 3 sans problème. En effet, en considèrant l'hypothèse que la valeur de l'inductance est beaucoup plus petite que la valeur de la résistance dans le modèle du moteur, $G0$ ne fait qu'être un gain d'environt $\frac{1}{R_a}$. Posant $L_a = 0$, la FTBO devient alors :
 \begin{equation}
 M_3 = \frac{\theta_L}{e_{in}} = \frac{k_{m_3} G_0 G_2 G_4}{1 + k_{m_3} G_2 G_3}
@@ -232,6 +244,7 @@ où $k_{m_3}$ est un gain correspondant à $G0$ avec $T = 0$.
 L'impact de ces réductions sur la réponse impulsionnelle peut être observé à la figure \ref{fig:dif_reduc_phy}. Comme tracé, la différence de la réduction $M_3$ est moins importante que celle de $M_2$, car la constante de temps de $G1$ ($L_a$) était encore plus faible que $T$. Dans les deux cas, les fonctions représentent tout de même très bien le  système en boucle ouvert et pourraient être utilisé afin de simplifier l'expression du système.
 \insertFigure{dif_reduc_phy}{0.7}{Difference de réponse impulsionelle suite aux réductions}{fig:dif_reduc_phy}
 \subsection{Réduction numérique}
+\textit{\% réduction numérique} \\
 La réduction numérique correspond à utiliser un stratégie semblable à la méthode physique, mais au lieux de réduire la complexité en regardant les paramètres physiques, il suffit de supprimer les pôles les moins importants de la FTBO originale \eqref{eq:FTBO}. Pour se faire, il faut utiliser la fonction \textit{residue} de Matlab. Celle retourne les pôles de FTBO. Ceux-ci sont :
 \[	P_0 = -998.9565	\]
 \[	P_1 = -100.0000	\]
@@ -245,18 +258,13 @@ La différence à la réponse impulsionnelle originale est représenté à la fi
 
 \insertFigure{dif_reduc_num}{0.7}{Difference de réponse impulsionelle suite aux réductions}{fig:dif_reduc_num}
 
-\section{Réponse du système à la consigne}
-La réponse à l'échelon de la fonction de transfert du système en boucle fermée, donnée par l'équation (BOUCLE FERMÉE), est la suivante.
-(insert figure step response)
-On remarque premièrement que la réponse se stabilise autour de la valeur $\theta_l = 1$, soit la valeur de consigne donnée.
-Deuxièmement, le système présente un léger sous-amortissement, qu'on remarque puisque l'angle mesurée oscille autour de la consigne.
-Ce résultat est logique physiquement, et représente le comportement désiré du système.
 
 
 \section{Identification du moteur}
+\textit{\% identification du moteur} \\
 Les résultats de l'expérience à rotor bloqué permettent d'identifier les valeurs de $R_A$, $k_i$ et $k_b$. Durant cet expérience, la force contre électromotrice est nulle (il n'y a pas de rotation) et l'hypothèse est tel que l'inductance est beaucoup plus petite que la résistance. Ceci nous permet d'obtenir :
-\[	R_a = \frac{e_a}{I_a} = 7.34 \Omega	\]
-\[	k_i = \frac{T_m}{I_a} =	0.48 		\]
+\[	R_a = \frac{e_a}{I_a} = 7.34\,\Omega	\]
+\[	k_i = \frac{T_m}{I_a} =	0.48\,kgm^2/sA 		\]
 \[	k_b = k_i							\]
 Ensuite, afin de trouver les deux dernières variables, $B_m$ et $J_m$, il est possible de passer par la fonction de transfert qu'on obtient par l'équation physique du couple exercé par le moteur. Partant de 
 \begin{equation}
@@ -283,6 +291,7 @@ Réutilisant les equations \eqref{eq:tf_odr1} et \eqref{eq:tf_moteur} avec les r
 \[J_m = 0.0229	\]
 
 \section{Arbre flexible}
+\textit{\% arbre flexible} \\
 Si on remplace l'arbre de transmission rigide par une tige flexible, on doit ajouter $\theta_m$ et $\omega_m$ au système d'équations d'état.
 Comme la tige est situé après la transmission dans le système, le couple causé par sa torsion est défini ainsi, avec l'angle $\theta_m$ vu du côté de la charge.
 \begin{equation}
@@ -344,12 +353,9 @@ e_a  \\
 \end{bmatrix}
 $$
 La réponse impulsionnelle du système est la suivante.
-\begin{center}
-	\centering
-	\includegraphics[width=0.7\textwidth]{h_mou}
-	\captionof{figure}{Réponse impulsionnelle de l'arbre flexible et comparaison entre les deux systèmes.}
-	\label{puissance}
-\end{center}
+\insertFigure{h_mou}{1}{Réponse impulsionnelle de l'arbre flexible et comparaison entre les deux systèmes.}{fig:h_mou}
+
+
 On remarque que la réponse est très similaire à celle du système avec l'arbre rigide. 
 De plus, les oscillations causées par le ressort torsionnel diminuent avec la stabilisation du système.
 
