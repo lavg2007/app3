@@ -101,10 +101,12 @@ legend('3','2','H','G')
  
 %% reponse a la consigne
 % l'equation de la reponse est
-rep = Kp*H/(Kp*H + 1)
- 
+rep_tet_d = Kp*H/(Kp*H + 1)
+rep_tet_d_norm = minreal(rep_tet_d)
+% sous forme complete
+
 figure()
-step(rep) 
+step(rep_tet_d) 
  
 %% identification du moteur
 load('donnees_moteur_2016.mat')
